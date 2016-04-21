@@ -1,0 +1,13 @@
+{
+  "name": "add-jiang-pb",
+  "version": "0.0.1",
+  "description": "Add JiangKangyur pb tag to the text of other Kangyur",
+  "keywords": [
+    "jiangkangyur"
+  ],
+  "bugs": {
+    "url": "https://github.com/chiehan1/addJiangPb/issues"
+  },
+  "main": "index.js",
+  "license": "MIT"
+}

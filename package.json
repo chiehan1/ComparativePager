@@ -1,9 +1,9 @@
 {
-  "name": "add-jiang-pb",
+  "name": "pb-inserter",
   "version": "0.0.1",
-  "description": "Add JiangKangyur pb tag to the text of other Kangyur",
+  "description": "Add Kangyur1 pb tags to the text of Kangyur2",
   "bugs": {
-    "url": "https://github.com/chiehan1/addJiangPb/issues"
+    "url": "https://github.com/chiehan1/PbInserter/issues"
   },
   "main": "index.js",
   "dependencies": {

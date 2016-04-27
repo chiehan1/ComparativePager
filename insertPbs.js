@@ -35,35 +35,34 @@ AddTags.prototype.split2Pages = function() {
 
 AddTags.prototype.insertTags = function() {
   this.pages.forEach(function(text) {
-    var syls = text.split('་');
-    var newPbTag = syls[1].match('id="(.+?)"/>')[1];
-    var wholeNewTag = '<jp="' + newPbTag + '"/>';
+    var syls = text.split('་').slice(2);
+    var newPbTag = '<jp="' + text.match(/<[\s\S]*?=".+?\.(.+?)"\/>/)[1] + '"/>';
+    var matchSyl = syls[0] + '(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
+    var lastMatchSyl = '';
+    for(var i = 1; i < syls.length; i++) {
 
-    for(var i = 2; i < syls.length; i++) {
-      var matchSyl = syls[i];
-      var matchNumber = null;
-      var regex = '';
+      var regex = new RegExp(matchSyl, 'g');
+      var matchNumber = this.textTagTo.match(regex);
 
-      for(var j = i + 1; j < syls.length; j++) {
-        regex = new RegExp(matchSyl, 'g');
-        matchNumber = this.textTagTo.match(regex);
-        if(!matchNumber) {
-          break;
+      if(!matchNumber) {
+        if(lastMatchSyl !== '') {
+          lastMatchSyl += '[^>༆༈།༎༏༐༑༒་ ]+(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
+          matchSyl = lastMatchSyl + syls[i] + '(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
+          continue;
         }
-        else if (matchNumber.length === 1) {
-          break;
-        }
-        else if(matchNumber.length > 1) {
-          matchSyl += '(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?' + syls[j];
+        else {
+          matchSyl = syls[i] + '(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
           continue;
         }
       }
-      if(!matchNumber) {
-        i = j - 1;
+      else if(matchNumber.length > 1) {
+        lastMatchSyl = matchSyl;
+        matchSyl += syls[i] + '(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
+        continue;
       }
       else if(matchNumber.length === 1) {
         var index = this.textTagTo.search(regex);
-        this.textTagTo = this.textTagTo.slice(0, index) + wholeNewTag + this.textTagTo.slice(index);
+        this.textTagTo = this.textTagTo.slice(0, index) + newPbTag + this.textTagTo.slice(index);
         break;
       }
     }

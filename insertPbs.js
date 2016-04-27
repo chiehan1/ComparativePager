@@ -4,7 +4,7 @@ function getText(folder) {
   var fileNames = fs.readdirSync(folder).filter(function(fileName) {
       return '.' !== fileName[0];
   });
-  return fs.readFileSync(folder + '/' + fileNames[0], 'utf8').replace(/\u0f62/g, '\u0f6a');
+  return fs.readFileSync(folder + '/' + fileNames[0], 'utf8').replace(/\u0f6aང/g, '\u0f62ང');
 }
 
 function modifyText1(text) {

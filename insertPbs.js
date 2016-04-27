@@ -27,7 +27,7 @@ AddTags.prototype.split2Pages = function() {
   });
   this.pages = pages;
   return this;
-}
+};
 
 AddTags.prototype.insertTags = function() {
   this.pages.forEach(function(text) {
@@ -69,7 +69,7 @@ AddTags.prototype.insertTags = function() {
   }.bind(this));
 
   return this;
-}
+};
 
 var ljTagToDege = new AddTags('./assets/lijiang', './assets/dege');
 

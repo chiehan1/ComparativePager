@@ -71,7 +71,7 @@ AddTags.prototype.insertTags = function() {
   return this;
 };
 
-var ljTagToDege = new AddTags('./assets/singleFileTest/lijiang', './assets/singleFileTest/dege');
+var ljTagToDege = new AddTags('./takePbTagsHere', './insertPbTagsHere');
 
 var aaa = ljTagToDege.split2Pages().insertTags().textTagTo;
 

@@ -1,3 +1,3 @@
 require('babel-register');
 require('babel-polyfill');
-require('./insertPbs.js');
+require('./insertPbs2.js');

@@ -9,7 +9,8 @@ let getText = (folder) => {
 }
 
 let replaceWrongFixedTibetanLetters = (text) => {
-  return text.replace(/\u0f6aང/g, '\u0f62ང');
+  return text.replace(/([\s་])\u0f6aང([\s་])/g, '$1\u0f62ང$2');
+  // 1. \u0f6aང may be correct in Sanskrit-transliterated Tibetan, but [\s་]\u0f6aང[\s་] is wrong even in Sanskrit-transliterated Tibetan, commented by Karma Lobsang Gurung 2. what's fixed-form-tibetan-letters, see http://unicode.org/charts/PDF/U0F00.pdf
 } 
 
 function modifyText1(text) {

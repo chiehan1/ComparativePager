@@ -1,11 +1,16 @@
-var fs = require('fs');
+import fs from 'fs';
 
-function getText(folder) {
-  var fileNames = fs.readdirSync(folder).filter(function(fileName) {
-      return '.' !== fileName[0];
-  });
-  return fs.readFileSync(folder + '/' + fileNames[0], 'utf8').replace(/\u0f6aང/g, '\u0f62ང');
+let getText = (folder) => {
+  let fileNames = fs.readdirSync(folder)
+                    .filter(fileName => ('.' !== fileName[0]));
+  let originalText = fs.readFileSync(folder + '/' + fileNames[0], 'utf8');
+
+  return replaceWrongFixedTibetanLetters(originalText);
 }
+
+let replaceWrongFixedTibetanLetters = (text) => {
+  return text.replace(/\u0f6aང/g, '\u0f62ང');
+} 
 
 function modifyText1(text) {
   return text.replace(/<(?!pb).*?>/g, '')
@@ -76,4 +81,4 @@ var ljTagToDege = new AddTags('./takePbTagsHere', './insertPbTagsHere');
 var aaa = ljTagToDege.split2Pages().insertTags().textTagTo;
 
 //aaa;
-console.log(aaa);
+fs.writeFileSync('./output.txt', aaa, 'utf8');

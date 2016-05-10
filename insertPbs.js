@@ -5,11 +5,11 @@ let getText = (folder) => {
                     .filter(fileName => ('.' !== fileName[0]));
   let originalText = fs.readFileSync(folder + '/' + fileNames[0], 'utf8');
 
-  return replaceWrongFixedTibetanLetters(originalText);
+  return replaceWrongTLFFs(originalText);
 }
 
-let replaceWrongFixedTibetanLetters = (text) => {
-  return text.replace(/([\s་])\u0f6aང([\s་])/g, '$1\u0f62ང$2');
+let replaceWrongTLFFs = (text) => {
+  return text.replace(/([\s་])\u0f6aང([\s་])/g, '$1\u0f62ང$2'); // TLFF is Tibetan-Letter-Fixed-Form 
   // 1. \u0f6aང may be correct in Sanskrit-transliterated Tibetan, but [\s་]\u0f6aང[\s་] is wrong even in Sanskrit-transliterated Tibetan, commented by Karma Lobsang Gurung 2. what's fixed-form-tibetan-letters, see http://unicode.org/charts/PDF/U0F00.pdf
 } 
 

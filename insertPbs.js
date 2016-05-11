@@ -13,7 +13,7 @@ let replaceWrongTLFFs = (text) => {
   // 1. \u0f6aང may be correct in Sanskrit-transliterated Tibetan, but [\s་]\u0f6aང[\s་] is wrong even in Sanskrit-transliterated Tibetan, commented by Karma Lobsang Gurung 2. what's fixed-form-tibetan-letters, see http://unicode.org/charts/PDF/U0F00.pdf
 } 
 
-function modifyText1(text) {
+let modifyText = (text) => {
   return text.replace(/<(?!pb).*?>/g, '')
               .replace(/\r?\n/g, '་')
               .replace(/[༆༈།༎༏༐༑༒་ ]+/g, '་')
@@ -27,7 +27,7 @@ function AddTags(folderTagFrom, folderTagTo) {
 }
 
 AddTags.prototype.split2Pages = function() {
-  var pureText = modifyText1(this.textTagFrom);
+  var pureText = modifyText(this.textTagFrom);
   var pages = pureText.replace(/</g, '~$%<').split('~$%').filter(function(text){
     return text.match('<');
   });
@@ -82,4 +82,4 @@ var ljTagToDege = new AddTags('./takePbTagsHere', './insertPbTagsHere');
 var aaa = ljTagToDege.split2Pages().insertTags().textTagTo;
 
 //aaa;
-fs.writeFileSync('./output.txt', aaa, 'utf8');
+fs.writeFileSync('../output.txt', aaa, 'utf8');

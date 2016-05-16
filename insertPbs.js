@@ -42,13 +42,13 @@ AddTags.prototype.insertTags = function() {
     var matchSyl = syls[0] + '(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
     var lastMatchSyl = '';
 //console.log(newPbTag);
-    for(var i = 1; i < syls.length; i++) {
+    for (var i = 1; i < syls.length; i++) {
 
       var regex = new RegExp(matchSyl, 'g');
       var matchNumber = this.textTagTo.match(regex);
 
-      if(!matchNumber) {
-        if(lastMatchSyl !== '') {
+      if (!matchNumber) {
+        if (lastMatchSyl !== '') {
 //console.log(i, 'unMatch', matchSyl);
           lastMatchSyl += '[^>༆༈།༎༏༐༑༒་ ]+(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
           matchSyl = lastMatchSyl + syls[i] + '(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
@@ -59,13 +59,13 @@ AddTags.prototype.insertTags = function() {
           continue;
         }
       }
-      else if(matchNumber.length > 1) {
+      else if (matchNumber.length > 1) {
 //console.log(i, matchNumber.length, matchSyl);
         lastMatchSyl = matchSyl;
         matchSyl += syls[i] + '(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
         continue;
       }
-      else if(matchNumber.length === 1) {
+      else if (matchNumber.length === 1) {
 //console.log(i, 'matched', matchSyl);
         var index = this.textTagTo.search(regex);
         this.textTagTo = this.textTagTo.slice(0, index) + newPbTag + this.textTagTo.slice(index);
@@ -81,5 +81,5 @@ var ljTagToDege = new AddTags('./takePbTagsHere', './insertPbTagsHere');
 
 var aaa = ljTagToDege.split2Pages().insertTags().textTagTo;
 
-//aaa;
-fs.writeFileSync('../output.txt', aaa, 'utf8');
+fs.writeFileSync('./output.txt', aaa, 'utf8');
+

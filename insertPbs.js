@@ -64,7 +64,7 @@ let insertPbTags = (refFolder, targetFolder) => {
           lastMatchRegex += (possibleSyl + sylSeparator);
           matchRegex = lastMatchRegex + syls[i] + sylSeparator;
         }
-        else if ('' === matchResult) {
+        else if (null === matchResult) {
           matchRegex = syls[i] + sylSeparator;
         }
       }

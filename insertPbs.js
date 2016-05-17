@@ -1,5 +1,10 @@
 import fs from 'fs';
 
+let replaceWrongTLFFs = (text) => {
+  return text.replace(/([\s་])\u0f6aང([\s་])/g, '$1\u0f62ང$2'); // TLFF is Tibetan-Letter-Fixed-Form 
+  // 1. \u0f6aང may be correct in Sanskrit-transliterated Tibetan, but [\s་]\u0f6aང[\s་] is wrong even in Sanskrit-transliterated Tibetan, commented by Karma Lobsang Gurung 2. what's fixed-form-tibetan-letters, see http://unicode.org/charts/PDF/U0F00.pdf
+} 
+
 let getText = (folder) => {
   let fileNames = fs.readdirSync(folder)
                     .filter(fileName => ('.' !== fileName[0]));
@@ -8,10 +13,9 @@ let getText = (folder) => {
   return replaceWrongTLFFs(originalText);
 }
 
-let replaceWrongTLFFs = (text) => {
-  return text.replace(/([\s་])\u0f6aང([\s་])/g, '$1\u0f62ང$2'); // TLFF is Tibetan-Letter-Fixed-Form 
-  // 1. \u0f6aང may be correct in Sanskrit-transliterated Tibetan, but [\s་]\u0f6aང[\s་] is wrong even in Sanskrit-transliterated Tibetan, commented by Karma Lobsang Gurung 2. what's fixed-form-tibetan-letters, see http://unicode.org/charts/PDF/U0F00.pdf
-} 
+let removeNonPbTags = (text) => {
+  return text.replace(/<(?!pb).*?>/g, '');
+}
 
 let split2Pages = (text) => {
   let pages = removeNonPbTags(text).replace(/<(?!pb).*?>/g, '')
@@ -21,24 +25,13 @@ let split2Pages = (text) => {
 
   let pageObjs = pages.map(page => {
     let obj = {};
-    obj.pbId = '<jp="' + page.match(/".+?\.(.+?)"/)[1] + '"/>';
+    obj.pbTag = '<jp="' + page.match(/".+?\.(.+?)"/)[1] + '"/>';
     obj.pageP = page.replace(/<.*?>(\r?\n)*/, '');
 
     return obj;
   });
 
   return pageObjs;
-}
-
-let removeNonPbTags = (text) => {
-  return text.replace(/<(?!pb).*?>/g, '');
-}
-
-let insertPbTags = (refFolder, targetFolder) => {
-  let refPageObjs = split2Pages(getText(refFolder));
-  let targetText = getText(targetFolder);
-
-console.log(refPageObjs);
 }
 
 let split2Syls = (text) => {
@@ -50,49 +43,48 @@ let modifyText = (text) => {
              .replace(/[༆༈།༎༏༐༑༒་ ]+/g, '་');
 }
 
-insertPbTags('./takePbTagsHere', './insertPbTagsHere');
+let insertPbTags = (refFolder, targetFolder) => {
+  let refPageObjs = split2Pages(getText(refFolder));
+  let targetText = getText(targetFolder);
 
-AddTags.prototype.insertTags = function() {
-  this.pages.forEach(function(text) {
-    var syls = text.split('་').slice(2);
-    var newPbTag = '<jp="' + text.match(/<[\s\S]*?=".+?\.(.+?)"\/>/)[1] + '"/>';
-    var matchSyl = syls[0] + '(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
-    var lastMatchSyl = '';
-//console.log(newPbTag);
-    for (var i = 1; i < syls.length; i++) {
+  refPageObjs.forEach((obj) => {
+    let pbTag = obj.pbTag;
+    let syls = split2Syls(modifyText(obj.pageP));
+    let sylSeparator = '(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
+    let possibleSyl = '[^>༆༈།༎༏༐༑༒་ ]+';
+    let matchRegex = syls[0] + sylSeparator;
+    let lastMatchRegex = '';
 
-      var regex = new RegExp(matchSyl, 'g');
-      var matchNumber = this.textTagTo.match(regex);
+    for (let i = 1; i < syls.length; i++) {
+      let regex = new RegExp(matchRegex, 'g');
+      let matchResult = targetText.match(regex);
 
-      if (!matchNumber) {
-        if (lastMatchSyl !== '') {
-//console.log(i, 'unMatch', matchSyl);
-          lastMatchSyl += '[^>༆༈།༎༏༐༑༒་ ]+(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
-          matchSyl = lastMatchSyl + syls[i] + '(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
-          continue;
+      if (!matchResult) {
+        if (lastMatchRegex !== '') {
+          lastMatchRegex += (possibleSyl + sylSeparator);
+          matchRegex = lastMatchRegex + syls[i] + sylSeparator;
         }
-        else {
-          matchSyl = syls[i] + '(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
-          continue;
+        else if ('' === matchResult) {
+          matchRegex = syls[i] + sylSeparator;
         }
       }
-      else if (matchNumber.length > 1) {
-//console.log(i, matchNumber.length, matchSyl);
-        lastMatchSyl = matchSyl;
-        matchSyl += syls[i] + '(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
-        continue;
+      else if (matchResult.length > 1) {
+        lastMatchRegex = matchRegex;
+        matchRegex += syls[i] + sylSeparator;
       }
-      else if (matchNumber.length === 1) {
-//console.log(i, 'matched', matchSyl);
-        var index = this.textTagTo.search(regex);
-        this.textTagTo = this.textTagTo.slice(0, index) + newPbTag + this.textTagTo.slice(index);
+      else if (1 === matchResult.length) {
+        let insertIndex = targetText.search(regex);
+        targetText = targetText.slice(0, insertIndex) + pbTag + targetText.slice(insertIndex);
+        console.log('insert ', pbTag);
         break;
       }
     }
-  }.bind(this));
+  });
 
-  return this;
-};
+  return targetText;
+}
 
-//fs.writeFileSync('./output.txt', aaa, 'utf8');
 
+let insertedPbText = insertPbTags('./takePbTagsHere', './insertPbTagsHere');
+
+fs.writeFileSync('./output.txt', insertedPbText, 'utf8');

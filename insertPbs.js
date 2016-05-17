@@ -15,9 +15,9 @@ let replaceWrongTLFFs = (text) => {
 
 let split2Pages = (text) => {
   let pages = removeNonPbTags(text).replace(/<(?!pb).*?>/g, '')
-                                    .replace(/</g, '~$%<')
-                                    .split('~$%')
-                                    .filter(page => (page.match('<')));
+                                   .replace(/</g, '~$%<')
+                                   .split('~$%')
+                                   .filter(page => (page.match('<')));
 
   let pageObjs = pages.map(page => {
     let obj = {};
@@ -34,29 +34,23 @@ let removeNonPbTags = (text) => {
   return text.replace(/<(?!pb).*?>/g, '');
 }
 
-console.log(split2Pages(getText('./takePbTagsHere')));
+let insertPbTags = (refFolder, targetFolder) => {
+  let refPageObjs = split2Pages(getText(refFolder));
+  let targetText = getText(targetFolder);
+
+console.log(refPageObjs);
+}
+
+let split2Syls = (text) => {
+  return modifyText(text).split('་');
+}
 
 let modifyText = (text) => {
-  return text.replace(/<(?!pb).*?>/g, '')
-              .replace(/\r?\n/g, '་')
-              .replace(/[༆༈།༎༏༐༑༒་ ]+/g, '་')
-              .replace(/་(<|$)/g, '$1');
+  return text.replace(/(\r?\n)+/g, '་')
+             .replace(/[༆༈།༎༏༐༑༒་ ]+/g, '་');
 }
 
-function AddTags(folderTagFrom, folderTagTo) {
-  this.textTagFrom = getText(folderTagFrom);
-  this.textTagTo = getText(folderTagTo);
-  this.pages = '';
-}
-
-AddTags.prototype.split2Pages = function() {
-  var pureText = modifyText(this.textTagFrom);
-  var pages = pureText.replace(/</g, '~$%<').split('~$%').filter(function(text){
-    return text.match('<');
-  });
-  this.pages = pages;
-  return this;
-};
+insertPbTags('./takePbTagsHere', './insertPbTagsHere');
 
 AddTags.prototype.insertTags = function() {
   this.pages.forEach(function(text) {
@@ -99,10 +93,6 @@ AddTags.prototype.insertTags = function() {
 
   return this;
 };
-
-var ljTagToDege = new AddTags('./takePbTagsHere', './insertPbTagsHere');
-
-var aaa = ljTagToDege.split2Pages().insertTags().textTagTo;
 
 //fs.writeFileSync('./output.txt', aaa, 'utf8');
 

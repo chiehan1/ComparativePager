@@ -13,6 +13,29 @@ let replaceWrongTLFFs = (text) => {
   // 1. \u0f6aང may be correct in Sanskrit-transliterated Tibetan, but [\s་]\u0f6aང[\s་] is wrong even in Sanskrit-transliterated Tibetan, commented by Karma Lobsang Gurung 2. what's fixed-form-tibetan-letters, see http://unicode.org/charts/PDF/U0F00.pdf
 } 
 
+let split2Pages = (text) => {
+  let pages = removeNonPbTags(text).replace(/<(?!pb).*?>/g, '')
+                                    .replace(/</g, '~$%<')
+                                    .split('~$%')
+                                    .filter(page => (page.match('<')));
+
+  let pageObjs = pages.map(page => {
+    let obj = {};
+    obj.pbId = '<jp="' + page.match(/".+?\.(.+?)"/)[1] + '"/>';
+    obj.pageP = page.replace(/<.*?>(\r?\n)*/, '');
+
+    return obj;
+  });
+
+  return pageObjs;
+}
+
+let removeNonPbTags = (text) => {
+  return text.replace(/<(?!pb).*?>/g, '');
+}
+
+console.log(split2Pages(getText('./takePbTagsHere')));
+
 let modifyText = (text) => {
   return text.replace(/<(?!pb).*?>/g, '')
               .replace(/\r?\n/g, '་')
@@ -81,5 +104,5 @@ var ljTagToDege = new AddTags('./takePbTagsHere', './insertPbTagsHere');
 
 var aaa = ljTagToDege.split2Pages().insertTags().textTagTo;
 
-fs.writeFileSync('./output.txt', aaa, 'utf8');
+//fs.writeFileSync('./output.txt', aaa, 'utf8');
 

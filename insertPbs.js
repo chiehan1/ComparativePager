@@ -1,5 +1,9 @@
 import fs from 'fs';
 
+let flexibleRegex = {
+  'རྗེ': '(རྗེ|ཇེ)'
+}
+
 let replaceWrongTLFFs = (text) => {
   return text.replace(/([\s་])\u0f6aང([\s་])/g, '$1\u0f62ང$2'); // TLFF is Tibetan-Letter-Fixed-Form 
   // 1. \u0f6aང may be correct in Sanskrit-transliterated Tibetan, but [\s་]\u0f6aང[\s་] is wrong even in Sanskrit-transliterated Tibetan, commented by Karma Lobsang Gurung 2. what's fixed-form-tibetan-letters, see http://unicode.org/charts/PDF/U0F00.pdf
@@ -35,7 +39,15 @@ let split2Pages = (text) => {
 }
 
 let split2Syls = (text) => {
-  return modifyText(text).split('་');
+  let syls = modifyText(text).split('་');
+  return syls.map((syl) => {
+    if (flexibleRegex[syl]) {
+      return flexibleRegex[syl];
+    }
+    else {
+      return syl;
+    }
+  });
 }
 
 let modifyText = (text) => {
@@ -61,6 +73,7 @@ let insertPbTags = (refFolder, targetFolder) => {
       let matchResult = targetText.match(regex);
 
       if (!matchResult) {
+
         if (lastMatchRegex !== '') {
           lastMatchRegex += (possibleSyl + sylSeparator);
           matchRegex = lastMatchRegex + syls[i] + sylSeparator;
@@ -69,7 +82,9 @@ let insertPbTags = (refFolder, targetFolder) => {
           matchRegex = syls[i] + sylSeparator;
         }
       }
+
       else if (matchResult.length > 1) {
+
         if ((totalSylsN - 3) === i) {
           let insertIndex = targetText.search(regex);
           targetText = targetText.slice(0, insertIndex) + pbTag + targetText.slice(insertIndex);
@@ -80,6 +95,7 @@ let insertPbTags = (refFolder, targetFolder) => {
         lastMatchRegex = matchRegex;
         matchRegex += syls[i] + sylSeparator;
       }
+
       else if (1 === matchResult.length) {
         let insertIndex = targetText.search(regex);
         targetText = targetText.slice(0, insertIndex) + pbTag + targetText.slice(insertIndex);

@@ -25,7 +25,7 @@ let split2Pages = (text) => {
 
   let pageObjs = pages.map(page => {
     let obj = {};
-    obj.pbTag = '<jp="' + page.match(/".+?\.(.+?)"/)[1] + '"/>';
+    obj.pbTag = '<pjp=' + page.match(/".+?"/)[0] + '/>';
     obj.pageP = page.replace(/<.*?>(\r?\n)*/, '');
 
     return obj;
@@ -54,8 +54,9 @@ let insertPbTags = (refFolder, targetFolder) => {
     let possibleSyl = '[^>༆༈།༎༏༐༑༒་ ]+';
     let matchRegex = syls[0] + sylSeparator;
     let lastMatchRegex = '';
+    let totalSylsN = syls.length;
 
-    for (let i = 1; i < syls.length; i++) {
+    for (let i = 1; i < totalSylsN; i++) {
       let regex = new RegExp(matchRegex, 'g');
       let matchResult = targetText.match(regex);
 
@@ -69,6 +70,13 @@ let insertPbTags = (refFolder, targetFolder) => {
         }
       }
       else if (matchResult.length > 1) {
+        if ((totalSylsN - 3) === i) {
+          let insertIndex = targetText.search(regex);
+          targetText = targetText.slice(0, insertIndex) + pbTag + targetText.slice(insertIndex);
+          console.log('insert ', pbTag);
+          break;
+        }
+
         lastMatchRegex = matchRegex;
         matchRegex += syls[i] + sylSeparator;
       }

@@ -62,9 +62,45 @@ let unifySylSeparator = (text) => {
     .replace(/[༆༈།༎༏༐༑༒་ ]+/g, '་');
 };
 
+let getCountableTagValue = (tag) => {
+  let matchResults = tag.match(/".+?\.(\d+?)([abcd])"/);
+  let number = Number(matchResults[1]);
+  let letter = matchResults[2];
+  if ('a' === letter) {
+    return number + 0.1;
+  }
+  else if ('b' === letter) {
+    return number + 0.2;
+  }
+  else if ('c' === letter) {
+    return number + 0.3;
+  }
+  else {
+    return number + 0.4;
+  }
+};
+
+let checkTagOrders = (text, tagRegex) => {
+  let tags = text.match(tagRegex);
+  let countableTagValues = tags.map(getCountableTagValue);
+  let lastCountableTagValue = countableTagValues[0];
+  let uncertainTags = [];
+
+  for (var i = 1; i < countableTagValues.length; i++) {
+    let countableTagValue = countableTagValues[i];
+    if (countableTagValue < lastCountableTagValue) {
+      console.log(lastCountableTagValue, countableTagValue);
+      uncertainTags.push(tags[i]);
+    }
+    lastCountableTagValue = countableTagValue;
+  }
+
+  fs.writeFileSync('./uncertainTags.txt', uncertainTags.join('\r\n'), 'utf8');
+};
+
 let insertPbTags = (refFolder, targetFolder) => {
   let refTagFirstLetter = getFileName(refFolder)[0];
-  let refTagRegex = '/<' + refTagFirstLetter + 'p="(.+?)"/>';
+  let refTagRegex = new RegExp('<' + refTagFirstLetter + 'p="(.+?)"/>', 'g');
   let refPageObjs = split2Pages(getText(refFolder), refTagFirstLetter);
   let targetText = getText(targetFolder);
 
@@ -76,7 +112,6 @@ let insertPbTags = (refFolder, targetFolder) => {
     let matchRegex = syls[0] + sylSeparator;
     let lastMatchRegex = '';
     let totalSylsN = syls.length;
-
 
     for (let i = 1; i < totalSylsN; i++) {
       let regex = new RegExp(matchRegex, 'g');
@@ -112,6 +147,8 @@ let insertPbTags = (refFolder, targetFolder) => {
       }
     }
   });
+
+  checkTagOrders(targetText, refTagRegex);
 
   return targetText;
 };

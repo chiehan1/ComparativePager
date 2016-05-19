@@ -138,7 +138,7 @@ let matchPages = (refFolder, targetFolder) => {
       else if (matchResult.length > 1) {
 
         if ((totalSylsN - 3) === i) {
-          targetText = insertPbTag(targetText);
+          targetText = insertPbTag(targetText, regex, pbTag);
           break;
         }
 
@@ -146,7 +146,7 @@ let matchPages = (refFolder, targetFolder) => {
         matchRegex += nextMatchSyl + sylSeparator;
       }
       else if (1 === matchResult.length) {
-        targetText = insertPbTag(targetText);
+        targetText = insertPbTag(targetText, regex, pbTag);
         break;
       }
     }

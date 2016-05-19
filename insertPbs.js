@@ -98,7 +98,14 @@ let checkTagOrders = (text, tagRegex) => {
   fs.writeFileSync('./uncertainTags.txt', uncertainTags.join('\r\n'), 'utf8');
 };
 
-let insertPbTags = (refFolder, targetFolder) => {
+let insertPbTag = (targetText, targetRegex, pbTag) => {
+  let insertIndex = targetText.search(targetRegex);
+  console.log('insert ', pbTag);
+
+  return targetText.slice(0, insertIndex) + pbTag + targetText.slice(insertIndex);
+};
+
+let matchPages = (refFolder, targetFolder) => {
   let refTagFirstLetter = getFileName(refFolder)[0];
   let refTagRegex = new RegExp('<' + refTagFirstLetter + 'p="(.+?)"/>', 'g');
   let refPageObjs = split2Pages(getText(refFolder), refTagFirstLetter);
@@ -114,6 +121,7 @@ let insertPbTags = (refFolder, targetFolder) => {
     let totalSylsN = syls.length;
 
     for (let i = 1; i < totalSylsN; i++) {
+      let nextMatchSyl = syls[i];
       let regex = new RegExp(matchRegex, 'g');
       let matchResult = targetText.match(regex);
 
@@ -121,28 +129,24 @@ let insertPbTags = (refFolder, targetFolder) => {
 
         if ('' !== lastMatchRegex) {
           lastMatchRegex += (possibleSyl + sylSeparator);
-          matchRegex = lastMatchRegex + syls[i] + sylSeparator;
+          matchRegex = lastMatchRegex + nextMatchSyl + sylSeparator;
         }
         else if (null === matchResult) {
-          matchRegex = syls[i] + sylSeparator;
+          matchRegex = nextMatchSyl + sylSeparator;
         }
       }
       else if (matchResult.length > 1) {
 
         if ((totalSylsN - 3) === i) {
-          let insertIndex = targetText.search(regex);
-          targetText = targetText.slice(0, insertIndex) + pbTag + targetText.slice(insertIndex);
-          console.log('insert ', pbTag);
+          targetText = insertPbTag(targetText);
           break;
         }
 
         lastMatchRegex = matchRegex;
-        matchRegex += syls[i] + sylSeparator;
+        matchRegex += nextMatchSyl + sylSeparator;
       }
       else if (1 === matchResult.length) {
-        let insertIndex = targetText.search(regex);
-        targetText = targetText.slice(0, insertIndex) + pbTag + targetText.slice(insertIndex);
-        console.log('insert ', pbTag);
+        targetText = insertPbTag(targetText);
         break;
       }
     }
@@ -153,6 +157,6 @@ let insertPbTags = (refFolder, targetFolder) => {
   return targetText;
 };
 
-let insertedPbText = insertPbTags('./takePbTagsHere', './insertPbTagsHere');
+let insertedPbText = matchPages('./takePbTagsHere', './insertPbTagsHere');
 
 fs.writeFileSync('./output.txt', insertedPbText, 'utf8');

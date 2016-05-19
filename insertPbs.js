@@ -46,7 +46,7 @@ let split2Pages = (text, tagFirstLetter) => {
 };
 
 let split2Syls = (text) => {
-  let syls = modifyText(text).split('་');
+  let syls = unifySylSeparator(text).split('་');
   return syls.map((syl) => {
     if (flexibleRegex[syl]) {
       return flexibleRegex[syl];
@@ -57,7 +57,7 @@ let split2Syls = (text) => {
   });
 };
 
-let modifyText = (text) => {
+let unifySylSeparator = (text) => {
   return text.replace(/(\r?\n)+/g, '་')
     .replace(/[༆༈།༎༏༐༑༒་ ]+/g, '་');
 };
@@ -70,7 +70,7 @@ let insertPbTags = (refFolder, targetFolder) => {
 
   refPageObjs.forEach((obj) => {
     let pbTag = obj.pbTag;
-    let syls = split2Syls(modifyText(obj.pageP));
+    let syls = split2Syls(unifySylSeparator(obj.pageP));
     let sylSeparator = '(\r?\n|<.+?>|[༆༈།༎༏༐༑༒་ ])+?';
     let possibleSyl = '[^>༆༈།༎༏༐༑༒་ ]+';
     let matchRegex = syls[0] + sylSeparator;

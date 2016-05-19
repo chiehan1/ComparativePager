@@ -1,12 +1,12 @@
 import fs from 'fs';
 
-let flexibleRegex = {
+const flexibleRegex = {
   'རྗེ': '(རྗེ|ཇེ)'
-}
+};
 
 let getFileName = (folder) => {
   return fs.readdirSync(folder)
-           .filter(fileName => ('.' !== fileName[0]))[0];
+    .filter(fileName => ('.' !== fileName[0]))[0];
 }
 
 let replaceWrongTLFFs = (text) => {
@@ -56,13 +56,12 @@ let split2Syls = (text) => {
 
 let modifyText = (text) => {
   return text.replace(/(\r?\n)+/g, '་')
-             .replace(/[༆༈།༎༏༐༑༒་ ]+/g, '་');
+    .replace(/[༆༈།༎༏༐༑༒་ ]+/g, '་');
 }
-
-
 
 let insertPbTags = (refFolder, targetFolder) => {
   let refTagFirstLetter = getFileName(refFolder)[0];
+  let refTagRegex = '/<' + refTagFirstLetter + 'p="(.+?)"/>';
   let refPageObjs = split2Pages(getText(refFolder), refTagFirstLetter);
   let targetText = getText(targetFolder);
 
@@ -81,7 +80,7 @@ let insertPbTags = (refFolder, targetFolder) => {
 
       if (!matchResult) {
 
-        if (lastMatchRegex !== '') {
+        if ('' !== lastMatchRegex) {
           lastMatchRegex += (possibleSyl + sylSeparator);
           matchRegex = lastMatchRegex + syls[i] + sylSeparator;
         }
@@ -89,7 +88,6 @@ let insertPbTags = (refFolder, targetFolder) => {
           matchRegex = syls[i] + sylSeparator;
         }
       }
-
       else if (matchResult.length > 1) {
 
         if ((totalSylsN - 3) === i) {
@@ -102,7 +100,6 @@ let insertPbTags = (refFolder, targetFolder) => {
         lastMatchRegex = matchRegex;
         matchRegex += syls[i] + sylSeparator;
       }
-
       else if (1 === matchResult.length) {
         let insertIndex = targetText.search(regex);
         targetText = targetText.slice(0, insertIndex) + pbTag + targetText.slice(insertIndex);
@@ -111,7 +108,6 @@ let insertPbTags = (refFolder, targetFolder) => {
       }
     }
   });
-
 
   return targetText;
 }

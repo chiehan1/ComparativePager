@@ -117,7 +117,7 @@ let insertPbTags = (refFolder, targetFolder) => {
       let regex = new RegExp(matchRegex, 'g');
       let matchResult = targetText.match(regex);
 
-      if (!matchResult) {
+      if (! matchResult) {
 
         if ('' !== lastMatchRegex) {
           lastMatchRegex += (possibleSyl + sylSeparator);

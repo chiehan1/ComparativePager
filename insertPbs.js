@@ -4,15 +4,19 @@ let flexibleRegex = {
   'རྗེ': '(རྗེ|ཇེ)'
 }
 
+let getFileName = (folder) => {
+  return fs.readdirSync(folder)
+           .filter(fileName => ('.' !== fileName[0]))[0];
+}
+
 let replaceWrongTLFFs = (text) => {
   return text.replace(/([\s་])\u0f6aང([\s་])/g, '$1\u0f62ང$2'); // TLFF is Tibetan-Letter-Fixed-Form 
   // 1. \u0f6aང may be correct in Sanskrit-transliterated Tibetan, but [\s་]\u0f6aང[\s་] is wrong even in Sanskrit-transliterated Tibetan, commented by Karma Lobsang Gurung 2. what's fixed-form-tibetan-letters, see http://unicode.org/charts/PDF/U0F00.pdf
 } 
 
 let getText = (folder) => {
-  let fileNames = fs.readdirSync(folder)
-                    .filter(fileName => ('.' !== fileName[0]));
-  let originalText = fs.readFileSync(folder + '/' + fileNames[0], 'utf8');
+  let fileName = getFileName(folder);
+  let originalText = fs.readFileSync(folder + '/' + fileName, 'utf8');
 
   return replaceWrongTLFFs(originalText);
 }
@@ -21,7 +25,7 @@ let removeNonPbTags = (text) => {
   return text.replace(/<(?!pb).*?>/g, '');
 }
 
-let split2Pages = (text) => {
+let split2Pages = (text, tagFirstLetter) => {
   let pages = removeNonPbTags(text).replace(/<(?!pb).*?>/g, '')
                                    .replace(/</g, '~$%<')
                                    .split('~$%')
@@ -29,7 +33,7 @@ let split2Pages = (text) => {
 
   let pageObjs = pages.map(page => {
     let obj = {};
-    obj.pbTag = '<pjp=' + page.match(/".+?"/)[0] + '/>';
+    obj.pbTag = '<' + tagFirstLetter + 'p=' + page.match(/".+?"/)[0] + '/>';
     obj.pageP = page.replace(/<.*?>(\r?\n)*/, '');
 
     return obj;
@@ -55,8 +59,11 @@ let modifyText = (text) => {
              .replace(/[༆༈།༎༏༐༑༒་ ]+/g, '་');
 }
 
+
+
 let insertPbTags = (refFolder, targetFolder) => {
-  let refPageObjs = split2Pages(getText(refFolder));
+  let refTagFirstLetter = getFileName(refFolder)[0];
+  let refPageObjs = split2Pages(getText(refFolder), refTagFirstLetter);
   let targetText = getText(targetFolder);
 
   refPageObjs.forEach((obj) => {
@@ -105,9 +112,9 @@ let insertPbTags = (refFolder, targetFolder) => {
     }
   });
 
+
   return targetText;
 }
-
 
 let insertedPbText = insertPbTags('./takePbTagsHere', './insertPbTagsHere');
 

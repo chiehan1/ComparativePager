@@ -88,8 +88,7 @@ let checkTagOrders = (text, tagRegex) => {
 
   for (var i = 1; i < countableTagValues.length; i++) {
     let countableTagValue = countableTagValues[i];
-    if (countableTagValue < lastCountableTagValue) {
-      console.log(lastCountableTagValue, countableTagValue);
+    if ((countableTagValue - lastCountableTagValue) > 1 || countableTagValue < lastCountableTagValue) {
       uncertainTags.push(tags[i]);
     }
     lastCountableTagValue = countableTagValue;

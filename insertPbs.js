@@ -1,17 +1,8 @@
 import fs from 'fs';
 
-const bampoCompareInfo = JSON.parse(fs.readFileSync('./bampoCompareInfo.json', 'utf8'));
+const bampoCompareInfo = JSON.parse(fs.readFileSync('./assets/bampoCompareInfo.json', 'utf8'));
 
-const flexibleRegex = {
-  'རྗེ': '(རྗེ|ཇེ)',
-  'ཇེ': '(རྗེ|ཇེ)',
-  'ལ': '(ལ|ན|དུ|ཏུ|སུ|རུ)',
-  'དུ': '(དུ|ཏུ|ལ)',
-  'ཏུ': '(དུ|ཏུ|ལ)',
-  'ན': '(ལ|ན)',
-  'སུ': '(ལ|སུ)',
-  'རུ': '(ལ|རུ)'
-};
+const flexibleRegex = JSON.parse(fs.readFileSync('./assets/flexibleSyllableRegex.json', 'utf8'));
 
 let getFileName = (folder) => {
   return fs.readdirSync(folder)

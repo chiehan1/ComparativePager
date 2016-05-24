@@ -1,7 +1,16 @@
 import fs from 'fs';
 
+const bampoCompareInfo = JSON.parse(fs.readFileSync('./bampoCompareInfo.json', 'utf8'));
+
 const flexibleRegex = {
-  'རྗེ': '(རྗེ|ཇེ)'
+  'རྗེ': '(རྗེ|ཇེ)',
+  'ཇེ': '(རྗེ|ཇེ)',
+  'ལ': '(ལ|ན|དུ|ཏུ|སུ|རུ)',
+  'དུ': '(དུ|ཏུ|ལ)',
+  'ཏུ': '(དུ|ཏུ|ལ)',
+  'ན': '(ལ|ན)',
+  'སུ': '(ལ|སུ)',
+  'རུ': '(ལ|རུ)'
 };
 
 let getFileName = (folder) => {
@@ -105,7 +114,7 @@ let insertPbTag = (targetText, targetRegex, pbTag) => {
 };
 
 let matchPages = (refFolder, targetFolder) => {
-  let refTagFirstLetter = getFileName(refFolder)[0];
+  let refTagFirstLetter = 'program' + getFileName(refFolder)[0];
   let refTagRegex = new RegExp('<' + refTagFirstLetter + 'p="(.+?)"/>', 'g');
   let refPageObjs = split2Pages(getText(refFolder), refTagFirstLetter);
   let targetText = getText(targetFolder);
@@ -156,6 +165,6 @@ let matchPages = (refFolder, targetFolder) => {
   return targetText;
 };
 
-let insertedPbText = matchPages('./takePbTagsHere', './insertPbTagsHere');
+//let insertedPbText = matchPages('./takePbTagsHere', './insertPbTagsHere');
 
-fs.writeFileSync('./output.txt', insertedPbText, 'utf8');
+//fs.writeFileSync('./output.txt', insertedPbText, 'utf8');

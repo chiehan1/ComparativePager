@@ -1,5 +1,5 @@
-# ComparativePager
-Add Kangyur pb tag to other Kangyur
+# PbInserter
+--Add Kangyur pb tag to other Kangyur
 ```
 npm install
 ```

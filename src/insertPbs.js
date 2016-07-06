@@ -156,6 +156,6 @@ let matchPages = (refFolder, targetFolder) => {
   return targetText;
 };
 
-//let insertedPbText = matchPages('./takePbTagsHere', './insertPbTagsHere');
+let insertedPbText = matchPages('./takePbTagsHere', './insertPbTagsHere');
 
-//fs.writeFileSync('./output.txt', insertedPbText, 'utf8');
+fs.writeFileSync('./output.txt', insertedPbText, 'utf8');

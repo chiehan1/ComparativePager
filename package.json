@@ -8,7 +8,6 @@
   "main": "index.js",
   "dependencies": {
     "babel-polyfill": "6.7.4",
-    "diff": "2.2.2",
     "glob": "7.0.3"
   },
   "devDependencies": {
@@ -17,7 +16,6 @@
     "babel-register": "6.7.2"
   },
   "scripts": {
-    "insertTags": "node index.js"
   },
   "license": "MIT"
 }
